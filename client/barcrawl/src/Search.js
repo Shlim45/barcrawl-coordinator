@@ -1,61 +1,7 @@
 import React, { Component } from 'react';
-import {
-    Form,
-    Button,
-    Input,
-    Container,
-    Item,
-}
-from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 
-const SearchForm = (props) => {
-    const { onChange, onSubmit, city } = props; // , results
-    return (
-        <Container text>
-        <Form>
-            <Form.Field>
-                <Input
-                  name="city"
-                  onChange={onChange}
-                  value={city}
-                  placeholder="WHERE YOU AT?"
-                  fluid
-                />
-            </Form.Field>
-            <Button onClick={onSubmit}>Submit</Button>
-        </Form>
-        </Container>
-    );
-};
-
-const Result = (props) => {
-    const { result } = props;
-    return (
-        <Item>
-          <Item.Image size='tiny' src={result.image_url} />
-    
-          <Item.Content>
-            <Item.Header as='a'>{ result.name }</Item.Header>
-            <Item.Meta>Description..</Item.Meta>
-            <Item.Description>
-              
-            </Item.Description>
-            <Item.Extra>Additional Details</Item.Extra>
-          </Item.Content>
-        </Item>
-    );
-}
-
-const SearchResults = (props) => {
-    const { results } = props;
-    return (
-        <Item.Group>
-            { results.map(result => (
-                <Result key={ result.id }result={result} />
-            )) }
-        </Item.Group>
-    );
-}
+import { SearchForm, SearchResults } from './components';
 
 class Search extends Component {
     constructor(props) {
@@ -70,9 +16,9 @@ class Search extends Component {
         this.onChange = this.onChange.bind(this);
     }
     
-    handleSearch = (category, location) => {
+    handleSearch = (term, location) => {
         const url = new URL("https://fcc-dynamic-shlim45.c9users.io:8081/api/search"),
-           params = { category, location };
+           params = { term, location };
         Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
         
         fetch(url).then(res => res.json())
@@ -87,6 +33,7 @@ class Search extends Component {
         e.preventDefault();
         
         const {city} = this.state;
+        if (city === '') return;
         this.handleSearch('bars', city);
     }
 

@@ -13,9 +13,9 @@ app.get('/', function(req, res) {
 });
 
 app.get('/api/search', function(req, res) {
-    const { category, location } = req.query;
+    const { term, location } = req.query;
     
-    helpers.yelpSearch(category, location)
+    helpers.yelpSearch(term, location)
       .then(data => res.json(data)) // do checking of res.isOK and status here
       .catch(err => console.error(err));
 });
