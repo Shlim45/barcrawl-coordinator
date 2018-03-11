@@ -1,0 +1,26 @@
+{
+  "name": "barcrawl-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Yelp",
+    "API",
+    "barcrawl",
+    "bar",
+    "finder"
+  ],
+  "author": "Shlim45",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "node-fetch": "^2.1.1",
+    "yelp-fusion": "^2.0.3"
+  }
+}

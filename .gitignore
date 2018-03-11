@@ -1,0 +1,5 @@
+/server/node_modules/
+/client/barcrawl/node_modules/
+/client/barcrawl/.gitignore
+/server/.env
+.gitignore
