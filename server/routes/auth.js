@@ -1,10 +1,13 @@
-const express = require('express');
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const expressJwt = require('express-jwt');
-const router = express.Router();
+const express = require('express');
 const request = require('request');
+
+// const { authenticate, getCurrentUser, getOne } = require('../middleware');
+const middleware = require('../middleware');
 const mongoose = require('../mongoose');
+
+const router = express.Router();
 
 mongoose();
 
@@ -90,39 +93,8 @@ router.route('/auth/twitter')
         return next();
     }, generateToken, sendToken);
 
-//token handling middleware
-const authenticate = expressJwt({
-    secret: 'my-secret',
-    requestProperty: 'auth',
-    getToken: function(req) {
-    if (req.headers['x-auth-token']) {
-        return req.headers['x-auth-token'];
-    }
-    return null;
-    }
-});
-
-const getCurrentUser = function(req, res, next) {
-    User.findById(req.auth.id, function(err, user) {
-        if (err) {
-            next(err);
-        } else {
-            req.user = user;
-            next();
-        }
-    });
-};
-
-const getOne = function (req, res) {
-    var user = req.user.toObject();
-    
-    delete user['twitterProvider'];
-    delete user['__v'];
-    
-    res.json(user);
-};
 
 router.route('/auth/me')
-  .get(authenticate, getCurrentUser, getOne);
+  .get(middleware.authenticate, middleware.getCurrentUser, middleware.getOne);
     
 module.exports = router;
