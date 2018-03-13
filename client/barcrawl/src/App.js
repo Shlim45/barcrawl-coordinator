@@ -55,7 +55,7 @@ class App extends Component {
                     {headerContent}
                 </header>
                 
-                <Search />
+                <Search authenticated={this.state.isAuthenticated} />
                 
             </div>
         );

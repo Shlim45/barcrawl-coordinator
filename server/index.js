@@ -9,6 +9,7 @@ const helpers = require('./modules');
 const PORT = 8081 || process.env.PORT;
 
 const authRoutes = require('./routes/auth');
+const barRoutes = require('./routes/bar');
 
 const passportConfig = require('./passport');
 passportConfig();
@@ -42,8 +43,10 @@ app.get('/api/search', function(req, res) {
 });
 
 // AUTH ROUTES
-
 app.use('/api/v1', authRoutes);
+
+// BAR ROUTES
+app.use('/bars', barRoutes);
 
 app.listen(PORT, process.env.IP, function() {
     console.info('Listening on port ' + PORT);

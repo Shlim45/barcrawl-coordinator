@@ -29,8 +29,7 @@ export const SearchForm = (props) => {
 };
 
 export const Result = (props) => {
-    const { result } = props;
-    console.dir({result});
+    const { authenticated, result } = props;
     return (
         <Item>
           <Item.Image size='tiny' src={result.image_url} />
@@ -41,18 +40,22 @@ export const Result = (props) => {
             <Item.Description>
               
             </Item.Description>
-            <Item.Extra>Additional Details</Item.Extra>
+            { (authenticated) && 
+                <Item.Extra> 
+                    <Button>Going</Button>
+                </Item.Extra>
+            }
           </Item.Content>
         </Item>
     );
 }
 
 export const SearchResults = (props) => {
-    const { results } = props;
+    const { authenticated, results } = props;
     return (
         <Item.Group>
             { results.map(result => (
-                <Result key={ result.id }result={result} />
+                <Result key={ result.id } result={result} authenticated={authenticated} />
             )) }
         </Item.Group>
     );

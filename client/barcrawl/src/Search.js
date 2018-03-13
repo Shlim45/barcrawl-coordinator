@@ -10,10 +10,22 @@ class Search extends Component {
         this.state = {
             city: '',
             results: [],
+            bars: [],
         };
 
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
+    }
+    
+    componentDidMount() {
+        // populate bars state
+        const url = "https://fcc-dynamic-shlim45.c9users.io:8081/bars";
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+              this.setState({...data});
+          })
+          .catch(err => console.error(err));
     }
     
     handleSearch = (term, location) => {
@@ -46,11 +58,12 @@ class Search extends Component {
     }
 
     render() {
+        const { authenticated } = this.props;
         return (
             <Container text>
                 <SearchForm onChange={this.onChange} onSubmit={this.onSubmit} {...this.state} />
                 {this.state.results.length > 0 ?
-                    <SearchResults { ...this.state } />
+                    <SearchResults authenticated={authenticated} { ...this.state } />
                     : null
                 }
             </Container>
