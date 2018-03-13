@@ -23,8 +23,17 @@ class Search extends Component {
         fetch(url)
           .then(res => res.json())
           .then(data => {
-              // pull the id strings out
-              const bars = data.bars.map(bar => bar.id);
+              // pull the id STRING and going ARRAY out
+              const bars = data.bars.map(bar => {
+                  const {id, going} = bar;
+                  return {id, going};
+              });
+            // const bars = data.bars.reduce((acc, next) => {
+            //     const { id, going } = next;
+            //     const bar = { id, going };
+            //     return {bar, ...acc};
+            // }, []);
+              console.log({bars});
               this.setState({bars});
           })
           .catch(err => console.error(err));
