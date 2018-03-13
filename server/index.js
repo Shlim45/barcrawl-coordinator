@@ -1,16 +1,16 @@
 require("dotenv").config();
-const express = require('express');
-const app = express();
-const cors = require('cors');
-const helpers = require('./modules');
 const bodyParser = require('body-parser');
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+const helpers = require('./modules');
 
 const PORT = 8081 || process.env.PORT;
 
 const authRoutes = require('./routes/auth');
 
 const passportConfig = require('./passport');
-
 passportConfig();
 
 const corsOption = {

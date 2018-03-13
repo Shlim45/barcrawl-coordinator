@@ -1,39 +1,18 @@
 const passport = require('passport');
-const jwt = require('jsonwebtoken');
 const express = require('express');
 const request = require('request');
 
-// const { authenticate, getCurrentUser, getOne } = require('../middleware');
-const middleware = require('../middleware');
 const mongoose = require('../mongoose');
+const tokens = require('../modules/token');
 
 const router = express.Router();
 
 mongoose();
-
-const User = require('mongoose').model('User');
+// must import middleware after running mongoose(), requires UserSchema
+const middleware = require('../middleware');
 
 const TWITTER_KEY = process.env.TWITTER_KEY;
 const TWITTER_SECRET = process.env.TWITTER_SECRET;
-
-const createToken = function(auth) {
-    return jwt.sign({
-        id: auth.id,
-    }, process.env.SECRET,
-    {
-        expiresIn: 60 * 120
-    });
-};
-    
-const generateToken = function(req, res, next) {
-    req.token = createToken(req.auth);
-    return next();
-};
-    
-const sendToken = function(req, res) {
-    res.setHeader('x-auth-token', req.token);
-    return res.status(200).send(JSON.stringify(req.user));
-};
 
 // TWITTER AUTH ROUTES
 
@@ -91,7 +70,7 @@ router.route('/auth/twitter')
         };
     
         return next();
-    }, generateToken, sendToken);
+    }, tokens.generateToken, tokens.sendToken);
 
 
 router.route('/auth/me')
