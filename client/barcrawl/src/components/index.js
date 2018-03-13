@@ -30,6 +30,7 @@ export const SearchForm = (props) => {
 
 export const Result = (props) => {
     const { result } = props;
+    console.dir({result});
     return (
         <Item>
           <Item.Image size='tiny' src={result.image_url} />

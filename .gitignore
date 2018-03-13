@@ -2,4 +2,4 @@
 /client/barcrawl/node_modules/
 /client/barcrawl/.gitignore
 /server/.env
-.gitignore
+*/npm-debug.log

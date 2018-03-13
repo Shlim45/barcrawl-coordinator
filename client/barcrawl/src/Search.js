@@ -6,7 +6,7 @@ import { SearchForm, SearchResults } from './components';
 class Search extends Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             city: '',
             results: [],
