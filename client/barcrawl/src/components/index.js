@@ -51,7 +51,8 @@ export const Result = (props) => {
 }
 
 export const SearchResults = (props) => {
-    const { authenticated, results } = props;
+    const { authenticated, results, bars } = props;
+    console.log(bars);
     return (
         <Item.Group>
             { results.map(result => (

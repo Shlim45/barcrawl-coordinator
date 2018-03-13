@@ -23,7 +23,9 @@ class Search extends Component {
         fetch(url)
           .then(res => res.json())
           .then(data => {
-              this.setState({...data});
+              // pull the id strings out
+              const bars = data.bars.map(bar => bar.id);
+              this.setState({bars});
           })
           .catch(err => console.error(err));
     }
