@@ -7,21 +7,20 @@ const router = express.Router();
 
 // GET ALL BARS FROM DB
 router.get('/', function(req, res) {
-    Bar.find({}, function(err, allBars) {
-        if(err) {
+    Bar.find({}, function(err, bars) {
+        if(err) { // || !bars
             console.log(err);
         } else {
-            res.json({ bars: allBars });
+            res.json({ bars });
         }
     });
 });
 
-// id is string of bar in kebab_case
-router.get('/:id', function(req, res) {
-    const { id } = req.params;
-    
+function getBar(id) {
     // search by string ID, NOT mongo _id
-    Bar.findOne({ id }, function(err, bar) {
+    
+    // try using {upsert: true} instead of this shit
+    return Bar.findOne({ id }, function(err, bar) {
         if (err || !bar) {
           console.error({err});
            // bar not found, so create
@@ -29,16 +28,60 @@ router.get('/:id', function(req, res) {
                if (err || !newBar) {
                    return console.error(err.message);
                }
-               console.log({newBar});
-               res.json(newBar);
+               return newBar;
            })
         } else {
-            console.log({bar});
-            res.json(bar);
+            return bar;
         }
     });
+}
+
+// id is string of bar in kebab_case
+router.get('/:id', function(req, res) {
+    const { id } = req.params;
+    
+    const bar = getBar(id);
+    res.json(bar);
 });
 
-router.put
+router.put('/:id', function(req, res) {
+    const barId = req.params.id;
+    const { userId } = req.body;
+    
+    let isGoing;
+    
+    function updateCallback() {
+        res.json({ isGoing });
+    }
+    
+    getBar(barId)
+      .then(bar => {
+          const {going} = bar; // get array from bar
+          // FIX THIS, GOING IS AN ARRAY OF OBJECTS!!
+          // going = {when, _id, user}, check against user!
+          if (going.includes(userId)) {
+              // remove user from list
+              console.log('REMOVING FROM LIST', userId, barId);
+              isGoing = false;
+              Bar.findOneAndUpdate( { id: barId }, { $pullAll: {going: {user: userId} } }, function(err, updatedBar) {
+                  if (err || !updatedBar) {
+                      console.error(err);
+                  } else {
+                      console.log(updatedBar);
+                  }
+              } );
+          } else {
+              console.log('ADDING TO LIST', userId, barId);
+              isGoing = true;
+              Bar.findOneAndUpdate( { id: barId }, { $push: {going: {user: userId} } }, function(err, updatedBar) {
+                  if (err || !updatedBar) {
+                      console.error(err);
+                  } else {
+                      console.log(updatedBar);
+                  }
+              } );
+          }
+      });
+});
 
 module.exports = router;

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const bodyParser = require('body-parser');
+// const methodOverride = require('method-override');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -25,6 +26,7 @@ app.use(cors(corsOption));
 //rest API requirements
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+// app.use(methodOverride("_method"));
 
 // ROUTES
 
@@ -46,7 +48,7 @@ app.get('/api/search', function(req, res) {
 app.use('/api/v1', authRoutes);
 
 // BAR ROUTES
-app.use('/bars', barRoutes);
+app.use('/api/bars', barRoutes);
 
 app.listen(PORT, process.env.IP, function() {
     console.info('Listening on port ' + PORT);
