@@ -33,9 +33,11 @@ export const SearchForm = (props) => {
 export const Result = (props) => {
     const { handleGoing, authenticated, result, bars } = props;
     // check if bars array has result.id in it
-    const bar = bars.filter(bar => bar.id === result.id);
-    const peopleGoing = bar.length > 0 
-        ? bar.going.length 
+
+    const bar = bars.filter(bar => bar.id === result.id)[0]; // only grab one bar
+
+    const peopleGoing = (bar !== undefined)
+        ? bar.going.length
         : 0;
     return (
         <Item className="result">

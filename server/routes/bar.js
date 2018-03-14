@@ -36,6 +36,7 @@ function getBar(id) {
     });
 }
 
+// GET INFO FROM 1 SPECIFIC BAR
 // id is string of bar in kebab_case
 router.get('/:id', function(req, res) {
     const { id } = req.params;
@@ -43,6 +44,13 @@ router.get('/:id', function(req, res) {
     const bar = getBar(id);
     res.json(bar);
 });
+
+function getUsersFromBar(bar) {
+    if (!bar) return;
+    console.log('bar:', bar);
+}
+
+// ROUTE TO ADD/REMOVE USER GOING TO BAR
 
 router.put('/:id', function(req, res) {
     const barId = req.params.id;
@@ -59,6 +67,8 @@ router.put('/:id', function(req, res) {
           const {going} = bar; // get array from bar
           // FIX THIS, GOING IS AN ARRAY OF OBJECTS!!
           // going = {when, _id, user}, check against user!
+          
+          // going = [{user, when}] <-- actual structure
           if (going.includes(userId)) {
               // remove user from list
               console.log('REMOVING FROM LIST', userId, barId);
