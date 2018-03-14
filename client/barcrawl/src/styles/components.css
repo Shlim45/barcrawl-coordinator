@@ -1,0 +1,12 @@
+.result {
+    border: 2px solid transparent !important;
+    padding: 10px !important;
+}
+
+.result:hover {
+    border-top: 2px solid silver !important;
+    border-left: 2px solid silver !important;
+    border-bottom: 2px solid #555 !important;
+    border-right: 2px solid #555 !important;
+    box-shadow: 4px 4px 10px #555 !important;
+}

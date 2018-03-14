@@ -19,7 +19,7 @@ class Search extends Component {
     
     componentDidMount() {
         // populate bars state
-        const url = "https://fcc-dynamic-shlim45.c9users.io:8081/bars";
+        const url = "https://fcc-dynamic-shlim45.c9users.io:8081/api/bars";
         fetch(url)
           .then(res => res.json())
           .then(data => {
@@ -28,15 +28,31 @@ class Search extends Component {
                   const {id, going} = bar;
                   return {id, going};
               });
-            // const bars = data.bars.reduce((acc, next) => {
-            //     const { id, going } = next;
-            //     const bar = { id, going };
-            //     return {bar, ...acc};
-            // }, []);
-              console.log({bars});
+
               this.setState({bars});
           })
           .catch(err => console.error(err));
+    }
+    
+    handleGoing = (bar) => {
+        const { user } = this.props;
+
+        const url = "https://fcc-dynamic-shlim45.c9users.io:8081/api/bars/" + bar; // + "?_method=PUT"
+        console.log({user});
+        
+        fetch(url, {
+            method: "PUT", // TESTING WITHOUT METHOD_OVERRIDE
+            body: JSON.stringify({userId: user._id}),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }),
+        })
+            .then(res => res.json())
+            .then(data => console.log({data}))
+            .catch(err => console.error(err));
+        // put request
+        
     }
     
     handleSearch = (term, location) => {
@@ -74,7 +90,7 @@ class Search extends Component {
             <Container text>
                 <SearchForm onChange={this.onChange} onSubmit={this.onSubmit} {...this.state} />
                 {this.state.results.length > 0 ?
-                    <SearchResults authenticated={authenticated} { ...this.state } />
+                    <SearchResults authenticated={authenticated} handleGoing={this.handleGoing} { ...this.state } />
                     : null
                 }
             </Container>

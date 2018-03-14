@@ -8,6 +8,8 @@ import {
 }
 from 'semantic-ui-react';
 
+import '../styles/components.css';
+
 export const SearchForm = (props) => {
     const { onChange, onSubmit, city } = props; // , results
     return (
@@ -29,34 +31,49 @@ export const SearchForm = (props) => {
 };
 
 export const Result = (props) => {
-    const { authenticated, result } = props;
+    const { handleGoing, authenticated, result, bars } = props;
+    // check if bars array has result.id in it
+    const bar = bars.filter(bar => bar.id === result.id);
+    const peopleGoing = bar.length > 0 
+        ? bar.going.length 
+        : 0;
     return (
-        <Item>
+        <Item className="result">
           <Item.Image size='tiny' src={result.image_url} />
     
           <Item.Content>
-            <Item.Header as='a'>{ result.name }</Item.Header>
-            <Item.Meta>Description..</Item.Meta>
-            <Item.Description>
-              
-            </Item.Description>
-            { (authenticated) && 
-                <Item.Extra> 
-                    <Button>Going</Button>
+            <Item.Header as='a' href={result.url }>{ result.name }</Item.Header>
+            <Item.Meta>{ result.display_phone }</Item.Meta>
+            {!result.is_closed &&
+                <Item.Extra>
+                    <span>Open Now!</span>
+                    <span>
+                    { (authenticated) && 
+                            <Button onClick={handleGoing.bind(this, result.id)}>{ peopleGoing } Going</Button>
+                    }
+                    </span>
                 </Item.Extra>
             }
+            
+            <Item.Description>
+            {result.location.display_address.map((line, index) => (
+                <div key={index} className="address">{line}</div>
+            ))}
+            </Item.Description>
+            
+            
           </Item.Content>
         </Item>
     );
 }
 
 export const SearchResults = (props) => {
-    const { authenticated, results, bars } = props;
-    console.log(bars);
+    const { results } = props;
+
     return (
         <Item.Group>
             { results.map(result => (
-                <Result key={ result.id } result={result} authenticated={authenticated} />
+                <Result key={ result.id } result={result} {...props} />
             )) }
         </Item.Group>
     );
