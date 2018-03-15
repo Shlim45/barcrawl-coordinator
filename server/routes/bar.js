@@ -98,10 +98,6 @@ router.put('/:id', function(req, res) {
     
     let isGoing;
     
-    function updateCallback() {
-        res.json({ isGoing });
-    }
-    
     getBar(barId)
       .then(bar => {
           const {going} = bar; // get array from bar
