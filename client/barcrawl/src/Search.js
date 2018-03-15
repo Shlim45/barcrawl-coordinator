@@ -36,9 +36,9 @@ class Search extends Component {
     
     handleGoing = (bar) => {
         const { user } = this.props;
+        console.log('HANDLING GOING');
 
         const url = "https://fcc-dynamic-shlim45.c9users.io:8081/api/bars/" + bar; // + "?_method=PUT"
-        console.log({user});
         
         fetch(url, {
             method: "PUT", // TESTING WITHOUT METHOD_OVERRIDE
@@ -49,11 +49,18 @@ class Search extends Component {
             }),
         })
             .then(res => res.json())
-            .then(data => console.log({data}))
+            .then(data => {
+                // do something with data (need this to update # on going button)
+                // console.log('button:', button);
+                console.log({data});
+            })
             .catch(err => console.error(err));
-        // put request
         
     }
+    
+    // updateGoing = (isGoing) => {
+        
+    // }
     
     handleSearch = (term, location) => {
         const url = new URL("https://fcc-dynamic-shlim45.c9users.io:8081/api/search"),

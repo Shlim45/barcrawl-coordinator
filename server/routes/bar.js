@@ -45,18 +45,15 @@ router.get('/:id', function(req, res) {
     res.json(bar);
 });
 
-// takes going (an array of objects) and returns an array of the 
-// usernames going that night only
+// takes going (an array of objects) and returns an 
+// array of the usernames going that night only
 function getUserIdsGoingToday(goingArray) {
     if (!goingArray || goingArray.length <= 0) return;
     
     const today    = new Date(); // timestamp for LAST NIGHT @ midnight
     const tomorrow = new Date((new Date()).valueOf() + 1000*3600*24); // timestamp of TONIGHT @ MIDNIGHT
-    const oneDay   = 24 * 60 * 60 * 1000; //  * 1000
     const now      = new Date(Date.now());
     
-    // console.log(Date.parse(today), '\n', Date.parse(tomorrow), {oneDay});
-    // console.log({now: Date.parse(now)});
     
     const tonightTwoAM = (now.getHours() >= 2) 
         ? new Date( // use tomorrow if it is past 2AM
@@ -83,26 +80,13 @@ function getUserIdsGoingToday(goingArray) {
             today.getMonth(),
             today.getDate(),
             2,0,0);
-            
-        // console.log('TEST:', (twoAM - tonightTwoAM));
-            
-        // console.log('when:', Date.parse(timeWhenGoing));
-        // console.log('2am:', Date.parse(twoAM));
-        // console.log(twoAM - timeWhenGoing);
-        // console.log((twoAM - timeWhenGoing) < oneDay);
-        
-        const within24hours = (now - timeWhenGoing) < oneDay;
-        
-        // console.log({within24hours});
         
         const isExpired = (twoAM - tonightTwoAM) > 0;
         
-        // return (within24hours && twoAM - timeWhenGoing < oneDay);
         return !isExpired; // return if NOT expired
     });
     
-    // console.log({usersGoingTonight});
-    
+    // return an array of userIds as a string
     return usersGoingTonight.map(user => user.user.toString());
 }
 
@@ -121,18 +105,14 @@ router.put('/:id', function(req, res) {
     getBar(barId)
       .then(bar => {
           const {going} = bar; // get array from bar
-          // FIX THIS, GOING IS AN ARRAY OF OBJECTS!!
-          // going = {when, _id, user}, check against user!
+
           const goingIds = getUserIdsGoingToday(going);
-          
-          console.log({userId, goingIds});
-        //   console.log(goingIds.includes(userId));
-          // going = [{user, when}] <-- actual structure
+
           if (goingIds && goingIds.includes(userId)) {
               // remove user from list
               console.log('REMOVING FROM LIST', userId, barId);
               isGoing = false;
-              Bar.findOneAndUpdate( { id: barId }, { $pull: {going: {user: userId} } }, function(err, updatedBar) {
+              return Bar.findOneAndUpdate( { id: barId }, { $pull: {going: {user: userId} } }, {new: true}, function(err, updatedBar) {
                   if (err || !updatedBar) {
                       console.error(err);
                   } else {
@@ -142,7 +122,7 @@ router.put('/:id', function(req, res) {
           } else {
               console.log('ADDING TO LIST', userId, barId);
               isGoing = true;
-              Bar.findOneAndUpdate( { id: barId }, { $push: {going: {user: userId} } }, function(err, updatedBar) {
+              return Bar.findOneAndUpdate( { id: barId }, { $push: {going: {user: userId} } }, {new: true}, function(err, updatedBar) {
                   if (err || !updatedBar) {
                       console.error(err);
                   } else {
@@ -150,7 +130,8 @@ router.put('/:id', function(req, res) {
                   }
               } );
           }
-      });
+      })
+      .then(bar => res.json({isGoing, bar}));
 });
 
 module.exports = router;

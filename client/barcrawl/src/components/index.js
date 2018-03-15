@@ -51,7 +51,7 @@ export const Result = (props) => {
                     <span>Open Now!</span>
                     <span>
                     { (authenticated) && 
-                            <Button onClick={handleGoing.bind(this, result.id)}>{ peopleGoing } Going</Button>
+                            <Button onClick={handleGoing.bind(null, result.id)}>{ peopleGoing } Going</Button>
                     }
                     </span>
                 </Item.Extra>
