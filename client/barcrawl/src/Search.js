@@ -36,12 +36,11 @@ class Search extends Component {
     
     handleGoing = (bar) => {
         const { user } = this.props;
-        console.log('HANDLING GOING');
 
         const url = "https://fcc-dynamic-shlim45.c9users.io:8081/api/bars/" + bar; // + "?_method=PUT"
         
         fetch(url, {
-            method: "PUT", // TESTING WITHOUT METHOD_OVERRIDE
+            method: "PUT",
             body: JSON.stringify({userId: user._id}),
             headers: new Headers({
                 'Accept': 'application/json',
@@ -50,17 +49,17 @@ class Search extends Component {
         })
             .then(res => res.json())
             .then(data => {
-                // do something with data (need this to update # on going button)
-                // console.log('button:', button);
-                console.log({data});
+                const {bars} = this.state;
+                
+                const updatedBars = bars.map(bar => bar.id === data.bar.id
+                                        ? {id: data.bar.id, going: data.bar.going}
+                                        : bar)
+                // update the GOING button count
+                this.setState({bars: updatedBars});
             })
             .catch(err => console.error(err));
         
     }
-    
-    // updateGoing = (isGoing) => {
-        
-    // }
     
     handleSearch = (term, location) => {
         const url = new URL("https://fcc-dynamic-shlim45.c9users.io:8081/api/search"),
@@ -92,12 +91,17 @@ class Search extends Component {
     }
 
     render() {
-        const { authenticated } = this.props;
+        const { authenticated, user } = this.props;
         return (
             <Container text>
                 <SearchForm onChange={this.onChange} onSubmit={this.onSubmit} {...this.state} />
                 {this.state.results.length > 0 ?
-                    <SearchResults authenticated={authenticated} handleGoing={this.handleGoing} { ...this.state } />
+                    <SearchResults 
+                        authenticated={authenticated} 
+                        handleGoing={this.handleGoing} 
+                        userId={user ? user._id : null} 
+                        { ...this.state } 
+                    />
                     : null
                 }
             </Container>

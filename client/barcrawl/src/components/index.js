@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {
     Form,
     Button,
@@ -30,53 +30,88 @@ export const SearchForm = (props) => {
     );
 };
 
-export const Result = (props) => {
-    const { handleGoing, authenticated, result, bars } = props;
-    // check if bars array has result.id in it
-
-    const bar = bars.filter(bar => bar.id === result.id)[0]; // only grab one bar
-
-    const peopleGoing = (bar !== undefined)
-        ? bar.going.length
-        : 0;
-    return (
-        <Item className="result">
-          <Item.Image size='tiny' src={result.image_url} />
+export class Result extends Component {
+    constructor(props) {
+        super(props);
+        
+        const { authenticated, result, isGoing } = this.props;
+        
+        this.state = {
+            authenticated,
+            result,
+            isGoing,
+        };
+    }
     
-          <Item.Content>
-            <Item.Header as='a' href={result.url }>{ result.name }</Item.Header>
-            <Item.Meta>{ result.display_phone }</Item.Meta>
-            {!result.is_closed &&
-                <Item.Extra>
-                    <span>Open Now!</span>
-                    <span>
-                    { (authenticated) && 
-                            <Button onClick={handleGoing.bind(null, result.id)}>{ peopleGoing } Going</Button>
-                    }
-                    </span>
-                </Item.Extra>
-            }
-            
-            <Item.Description>
-            {result.location.display_address.map((line, index) => (
-                <div key={index} className="address">{line}</div>
-            ))}
-            </Item.Description>
-            
-            
-          </Item.Content>
-        </Item>
-    );
+    componentWillReceiveProps(nextProps) {
+        // should only be receiving authenticated & isGoing??
+        const nextAuth = nextProps.authenticated;
+        const nextGoing = nextProps.isGoing;
+        
+        this.setState({nextAuth, nextGoing});
+    }
+    
+    render() {
+        const { handleGoing, authenticated, result, bars, isGoing } = this.props;
+        // check if bars array has result.id in it
+    
+        const bar = bars.filter(bar => bar.id === result.id)[0]; // only grab one bar
+    
+        const peopleGoing = (bar !== undefined)
+            ? bar.going.length
+            : 0;
+        
+        return (
+            <Item className="result">
+              <Item.Image size='tiny' src={result.image_url} />
+        
+              <Item.Content>
+                <Item.Header as='a' href={ result.url }>{ result.name }</Item.Header>
+                <Item.Meta>{ result.display_phone }</Item.Meta>
+                {!result.is_closed &&
+                    <Item.Extra>
+                        <span>Open Now!</span>
+                        <span>
+                        { (authenticated) && 
+                                <Button onClick={handleGoing.bind(null, result.id)}>{ peopleGoing } Going {isGoing ? '✔️' : ''}</Button>
+                        }
+                        </span>
+                    </Item.Extra>
+                }
+                
+                <Item.Description>
+                {result.location.display_address.map((line, index) => (
+                    <div key={index} className="address">{line}</div>
+                ))}
+                </Item.Description>
+                
+                
+              </Item.Content>
+            </Item>
+        );
+    }
+};
+
+// bar={YelpAPI}, allBars=[{id, going},...], userId=mongo._id
+function isUserGoing(bar, allBars, userId) {
+    if (!userId) return;
+    const foundBar = allBars.filter(barX => barX.id === bar.id)[0];
+    
+    const idsGoing = foundBar ? foundBar.going.map(goingObj => goingObj.user) : null;
+    return idsGoing ? idsGoing.includes(userId) : false;
 }
 
 export const SearchResults = (props) => {
-    const { results } = props;
+    const { results, bars, userId } = props;
 
     return (
         <Item.Group>
-            { results.map(result => (
-                <Result key={ result.id } result={result} {...props} />
-            )) }
+            { results.map(result => {
+                // const count = getGoingCount(result, bars);
+                const isGoing = isUserGoing(result, bars, userId);
+
+                return <Result key={ result.id } result={result} isGoing={isGoing} {...props} />;
+            }) }
         </Item.Group>
     );
-}
+};

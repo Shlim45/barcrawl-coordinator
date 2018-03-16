@@ -1,5 +1,4 @@
 const express = require('express');
-// const mongoose = require('mongoose');
 
 const Bar = require('../models/Bar');
 
@@ -10,6 +9,7 @@ router.get('/', function(req, res) {
     Bar.find({}, function(err, bars) {
         if(err) { // || !bars
             console.log(err);
+            res.json({error: err.message});
         } else {
             res.json({ bars });
         }
@@ -19,17 +19,20 @@ router.get('/', function(req, res) {
 function getBar(id) {
     // search by string ID, NOT mongo _id
     
-    // try using {upsert: true} instead of this shit
+    // TODO try using {upsert: true} instead of this shit
     return Bar.findOne({ id }, function(err, bar) {
-        if (err || !bar) {
-          console.error({err});
+        if (err) {
+            console.error({err});
+            return {error: err.message};
+        }
+        if (!bar) {
            // bar not found, so create
            Bar.create({id}, function (err, newBar) {
-               if (err || !newBar) {
-                   return console.error(err.message);
-               }
-               return newBar;
-           })
+                if (err || !newBar) {
+                    return {error: err.message};
+                }
+                    return newBar;
+            });
         } else {
             return bar;
         }
@@ -42,6 +45,7 @@ router.get('/:id', function(req, res) {
     const { id } = req.params;
     
     const bar = getBar(id);
+    
     res.json(bar);
 });
 
@@ -106,23 +110,20 @@ router.put('/:id', function(req, res) {
 
           if (goingIds && goingIds.includes(userId)) {
               // remove user from list
-              console.log('REMOVING FROM LIST', userId, barId);
+            //   console.log('REMOVING FROM LIST', userId, barId);
               isGoing = false;
               return Bar.findOneAndUpdate( { id: barId }, { $pull: {going: {user: userId} } }, {new: true}, function(err, updatedBar) {
                   if (err || !updatedBar) {
                       console.error(err);
-                  } else {
-                      console.log(updatedBar);
                   }
               } );
           } else {
-              console.log('ADDING TO LIST', userId, barId);
+            // add user to list
+            //   console.log('ADDING TO LIST', userId, barId);
               isGoing = true;
               return Bar.findOneAndUpdate( { id: barId }, { $push: {going: {user: userId} } }, {new: true}, function(err, updatedBar) {
                   if (err || !updatedBar) {
                       console.error(err);
-                  } else {
-                      console.log(updatedBar);
                   }
               } );
           }

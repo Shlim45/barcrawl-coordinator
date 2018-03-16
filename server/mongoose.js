@@ -5,9 +5,9 @@ var mongoose = require('mongoose'),
 
 module.exports = function () {
 
-    var db = mongoose.connect(process.env.MONGO_URI);
+    const db = mongoose.connect(process.env.MONGO_URI);
 
-    var UserSchema = new Schema({
+    const UserSchema = new Schema({
         email: {
             type: String, required: true,
             trim: true, unique: true,
@@ -23,13 +23,13 @@ module.exports = function () {
     });
 
     UserSchema.statics.upsertTwitterUser = function(token, tokenSecret, profile, cb) {
-        var that = this;
+        const that = this;
         return this.findOne({
             'twitterProvider.id': profile.id
             }, function(err, user) {
                 // no user was found, lets create a new one
                 if (!user) {
-                    var newUser = new that({
+                    const newUser = new that({
                         email: profile.emails[0].value,
                         twitterProvider: {
                             id: profile.id,
